@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import torch.optim as optim
+from tqdm import tqdm
 from action import get_action_set, select_exploratory_action, select_greedy_action
 from learning import perform_qlearning_step, update_target_net
 from model import DQN
@@ -129,7 +130,9 @@ def learn(env,
     obs = get_state(env.reset())
 
     # Iterate over the total number of time steps
-    for t in range(total_timesteps):
+    # for t in range(total_timesteps):
+    for t in tqdm(range(total_timesteps), desc="Training Progress", ascii=True):
+
 
         # Select action
         action_id = select_exploratory_action(obs, policy_net, action_size, exploration, t)

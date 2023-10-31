@@ -21,7 +21,7 @@ def select_greedy_action(state, policy_net, action_size):
     # TODO: Select greedy action
     # Convert the state to a PyTorch tensor and pass it through the policy network to get Q-values
     with torch.no_grad():
-        state_tensor = torch.tensor(state, dtype=torch.float).unsqueeze(0)  # Add a batch dimension
+        state_tensor = torch.tensor(state, dtype=torch.float)
         q_values = policy_net(state_tensor)
         
     # Get the action with the maximum Q-value
