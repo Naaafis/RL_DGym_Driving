@@ -105,7 +105,7 @@ class DQN(nn.Module):
         torch.Tensors of size (batch_size, 1)
             Extracted numerical values
         """
-        print("observation shape: ", observation.size())
+        # print("observation shape: ", observation.size())
         speed_crop = observation[:, 84:94, 12, 0].reshape(batch_size, -1)
         speed = speed_crop.sum(dim=1, keepdim=True) / 255
         abs_crop = observation[:, 84:94, 18:25:2, 2].reshape(batch_size, 10, 4)
