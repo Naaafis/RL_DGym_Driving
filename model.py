@@ -46,6 +46,10 @@ class DQN(nn.Module):
         
         # Extract sensor values from the observation
         speed, abs_sensors, steering, gyroscope = self.extract_sensor_values(observation, batch_size)
+        speed = speed.to(self.device)
+        abs_sensors = abs_sensors.to(self.device)
+        steering = steering.to(self.device)
+        gyroscope = gyroscope.to(self.device)
 
         # reorder from (batch_size, height, width, channels) to (batch_size, channels, height, width)
         observation = observation.permute(0, 3, 1, 2)
@@ -63,6 +67,8 @@ class DQN(nn.Module):
         # # Pass through fully connected layers
         # x = F.relu(self.fc1(x))
         # x = self.fc2(x)
+        
+        observation = observation.to(self.device)
 
         x = F.relu(self.conv1(observation))
         #print(f"Shape after conv1: {x.shape}")
