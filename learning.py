@@ -54,10 +54,12 @@ def perform_qlearning_step(policy_net, target_net, optimizer, replay_buffer, bat
     This is primarily used to make the action_batch have the same dimensions as the output 
     of policy_net(state_batch) so that the .gather function can work correctly.
     '''
+    # DQN implementation
     state_action_values = policy_net(state_batch).gather(1, action_batch.unsqueeze(-1)).squeeze(-1)
     
+    
     # 3. Compute max_a Q(s_{t+1}, a) for all next states
-    next_state_values = target_net(next_state_batch).max(1)[0].detach()
+    # next_state_values = target_net(next_state_batch).max(1)[0].detach()
     
     ''' ~~~~ Note from GPT to explain the difference between Policy Net vs. Target Net ~~~~
     Policy Net vs. Target Net:
@@ -67,6 +69,23 @@ def perform_qlearning_step(policy_net, target_net, optimizer, replay_buffer, bat
         The target_net (updated less frequently) is used to generate the Q-value targets.
         This decoupling helps in stabilizing the Q-learning updates, making learning more robust.
     '''
+    
+    '''
+    Double DQN implementation:
+
+        For Double DQN, instead of using the target network to both select and evaluate the next action (which can lead to overestimation), 
+        we use the policy network to select the next action and the target network to evaluate it.
+
+        Use the policy_net to select the best action for the next state. This provides a more up-to-date estimation.
+
+        Use the target_net to evaluate the Q-value of the best action. This ensures a more stable and less biased estimation.
+
+        By decoupling the selection and evaluation of the next action, Double DQN reduces the overestimation bias.
+    '''
+    # Use the policy_net to select the best action for the next state
+    best_actions = policy_net(next_state_batch).max(1)[1].detach()
+    # Use the target_net to evaluate the Q-value of the best action
+    next_state_values = target_net(next_state_batch).gather(1, best_actions.unsqueeze(-1)).squeeze(-1).detach()
     
     # 4. Mask next state values if the episode terminated
     next_state_values[done_mask == 1] = 0.0
